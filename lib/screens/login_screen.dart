@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yojo_chats/screens/countries_areacode.dart';
 
+import '../widgets/buttons/forward_button.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -64,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         BorderSide(color: Colors.grey.shade300, width: 2.0),
                   ),
                   labelText: _selectedCountry,
-                  suffixIcon: const Icon(Icons.arrow_forward),
+                  suffixIcon: const Icon(Icons.arrow_forward_ios_sharp),
                 ),
               ),
               const SizedBox(height: 10),
@@ -80,11 +82,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 20),
-              Align(
-                child: TextButton(
-                  onPressed: () {},
-                  child: const Text('Next'),
-                ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ForwardButton(),
+                ],
               )
             ],
           ),
@@ -93,3 +95,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
