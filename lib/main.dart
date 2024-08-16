@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:yojo_chats/screens/auth_screen.dart';
 import 'package:yojo_chats/screens/chat_screen.dart';
+import 'package:yojo_chats/screens/contacts_screen.dart';
 import 'package:yojo_chats/screens/login_screen.dart';
 
 void main() {
@@ -12,11 +14,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginScreen(),
+      home: const LoginScreen(),
 
-      initialRoute: '/loginScreen',
-
+      initialRoute: '/',
       routes: {
+        '/authScreen': (context) => const AuthScreen(),
+        '/contactsScreen': (context) => const ContactsScreen(),
         '/chatScreen': (context) => const ChatScreen(),
       }
     );

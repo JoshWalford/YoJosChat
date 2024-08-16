@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:yojo_chats/screens/countries_areacode.dart';
 
 import '../widgets/buttons/forward_button.dart';
@@ -66,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         BorderSide(color: Colors.grey.shade300, width: 2.0),
                   ),
                   labelText: _selectedCountry,
-                  suffixIcon: const Icon(Icons.arrow_forward_ios_sharp),
+                  suffixIcon: const Icon(Iconsax.arrow_right),
                 ),
               ),
               const SizedBox(height: 10),
@@ -78,14 +79,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           BorderSide(color: Colors.grey.shade300, width: 2.0),
                     ),
                     labelText: 'Phone number',
-                suffixIcon: const Icon(Icons.phone_android)),
+                suffixIcon:  const Icon(Iconsax.call)
+                ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 20),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  ForwardButton(),
+                  ForwardButton( routeName: '/authScreen'),
                 ],
               )
             ],

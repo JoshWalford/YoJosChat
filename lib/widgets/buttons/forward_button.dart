@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../utils/constants/sizes.dart';
 
 class ForwardButton extends StatelessWidget {
+  final String routeName;
+
   const ForwardButton({
-    super.key,
-  });
+    required this.routeName, super.key,});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +21,9 @@ class ForwardButton extends StatelessWidget {
         backgroundColor: Colors.cyan.shade200,
       ),
       onPressed: () {
-        Navigator.pushNamed(context, '/chatScreen');
+        Navigator.pushNamed(context, routeName);
       },
-      child: const Icon(Icons.arrow_forward),
+      child: const Icon(Iconsax.arrow_right_1),
     );
   }
 }
