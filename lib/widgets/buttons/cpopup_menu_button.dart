@@ -1,90 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
+import 'package:yojo_chats/screens/contacts_screen.dart';
+import 'package:yojo_chats/screens/welcome_screen.dart';
 
-class CPopupMenuButton extends StatefulWidget {
-  const CPopupMenuButton({Key? key}) : super(key: key);
+import '../../provider/auth_provider.dart';
+import '../../utils/enum/menuItem.dart';
+
+class CPopupMenu extends StatefulWidget {
+  const CPopupMenu({super.key});
 
   @override
-  State<CPopupMenuButton> createState() => _CPopupMenuButtonState();
+  State<CPopupMenu> createState() => _CPopupMenuState();
 }
 
-class _CPopupMenuButtonState extends State<CPopupMenuButton> {
-  var selectedItem = '';
-
-  void _showPopupMenu(BuildContext context) async {
-    final RenderBox top = context.findRenderObject() as RenderBox;
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-
-    final Offset offset = top.localToGlobal(Offset.zero, ancestor: overlay);
-    final selected = await showMenu<String>(
-      context: context,
-      position: RelativeRect.fromRect(
-        Rect.fromLTWH(
-          offset.dx,
-          offset.dy + top.size.height,
-          top.size.width,
-          top.size.height,
-        ),
-        Offset.zero & overlay.size,
-      ),
-      items: [
-        const PopupMenuItem<String>(
-          value: '/about',
-          child: Text('About'),
-        ),
-        const PopupMenuItem<String>(
-          value: '/settings',
-          child: Text('Settings'),
-        ),
-      ],
-    );
-
-    if (selected != null) {
-      setState(() {
-        selectedItem = selected;
-      });
-      Navigator.pushNamed(context, selected);
-    }
-}
+class _CPopupMenuState extends State<CPopupMenu> {
+  MenuItems? selectedItem;
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    return PopupMenuButton<MenuItems>(
+      icon: const Icon(Icons.more_vert),
+      initialValue: selectedItem,
+      onSelected: (MenuItems item) {
+        setState(() {
+          selectedItem = item;
+        });
+        switch (item) {
+          case MenuItems.about:
+          // TODO: Handle this case.
+          case MenuItems.settings:
+          // TODO: Handle this case.
+          case MenuItems.logout:
+            ap.userSignOut().then(
+                  (value) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WelcomeScreen(),
+                    ),
+                  ),
+                );
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItems>>[
+        const PopupMenuItem<MenuItems>(
+          value: MenuItems.about,
+          child: ListTile(
+            leading: Icon(Icons.info),
+            title: Text('About'),
+          ),
+        ),
+        const PopupMenuItem<MenuItems>(
+          value: MenuItems.settings,
+          child: ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Setting'),
+          ),
+        ),
+        const PopupMenuItem<MenuItems>(
+          value: MenuItems.logout,
+          child: ListTile(
+            leading: Icon(Iconsax.logout),
+            title: Text('Logout'),
+          ),
+        ),
+      ],
+    );
   }
 }
-
-//   void showPopupMenu(BuildContext context) async {
-//     final RenderBox button = context.findRenderObject() as RenderBox;
-//     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-//
-//     final Offset offset = button.localToGlobal(Offset.zero, ancestor: overlay);
-//     final selected = await showMenu<String>(
-//       context: context,
-//       position: RelativeRect.fromRect(
-//         Rect.fromLTWH(
-//           offset.dx,
-//           offset.dy + button.size.height,
-//           button.size.width,
-//           button.size.height,
-//         ),
-//         Offset.zero & overlay.size,
-//       ),
-//       items: [
-//         const PopupMenuItem<String>(
-//           value: '/about',
-//           child: Text('About'),
-//         ),
-//         const PopupMenuItem<String>(
-//           value: '/settings',
-//           child: Text('Settings'),
-//         ),
-//       ],
-//     );
-//
-//     if (selected != null) {
-//       Navigator.pushNamed(context, selected);
-//     }
-//   }
-// }
-//
-//

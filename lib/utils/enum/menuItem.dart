@@ -1,0 +1,1 @@
+enum MenuItems {about, settings, logout }

@@ -1,11 +1,13 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart'as http;
-import 'package:iconsax/iconsax.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:yojo_chats/provider/auth_provider.dart';
 import 'package:yojo_chats/utils/placeholder/post_search_delegate.dart';
+import 'package:yojo_chats/widgets/buttons/contacts_button.dart';
 import 'package:yojo_chats/widgets/buttons/cpopup_menu_button.dart';
+import 'package:yojo_chats/widgets/contacts_listview.dart';
 
 import '../utils/placeholder/post.dart';
 
@@ -26,7 +28,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
   }
 
   Future<void> _getPosts() async {
-    final response = await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
+    final response =
+        await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
 
     if (response.statusCode == 200) {
       final bodyJson = jsonDecode(response.body) as List;
@@ -41,6 +44,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 3.0,
@@ -62,26 +67,28 @@ class _ContactsScreenState extends State<ContactsScreen> {
               delegate: PostSearchDelegate(posts: posts),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {
-              final popupMenu = CPopupMenuButton();
-              popupMenu._showPopupMenu(context);
-            },
-          ),
+          const CPopupMenu(),
         ],
       ),
-      body:
-      //const PostList(posts: posts),
-      Column(
+      body: const Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const SizedBox(height: 20),
+          SizedBox(height: 0),
           Expanded(
-            child: ListView(),
+            child: ContactsListView(),
+          ),
+          SizedBox(height: 0),
+          Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ContactsButton(routeName: '/chatScreen'),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
-
+}

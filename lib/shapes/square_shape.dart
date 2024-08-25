@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 class SquareShape extends StatelessWidget {
   const SquareShape({super.key});
 
+  //final List<TextEditingController> controllers;
+
+  //const SquareShape({super.key, required this.controllers});
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -28,6 +32,7 @@ class SquareShape extends StatelessWidget {
                   : [],
             ),
             child: TextFormField(
+              //controller: controllers[index],
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
                 contentPadding: EdgeInsets.all(10.0),

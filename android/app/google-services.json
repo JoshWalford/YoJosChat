@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "229864937444",
+    "project_id": "yojo-s-chat",
+    "storage_bucket": "yojo-s-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229864937444:android:c03b0cbd13fb475f2519f1",
+        "android_client_info": {
+          "package_name": "com.yojo.yojo_chats"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqqSKiJ4hfVp2GNMoZX6SilfOMMu3Myco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

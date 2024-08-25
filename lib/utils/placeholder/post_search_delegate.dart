@@ -14,6 +14,7 @@ class PostSearchDelegate extends SearchDelegate{
       icon: const Icon(Icons.clear),
       onPressed: () => query.isEmpty ? close(context, null) : query = '',
     );
+    return null;
   }
 
   @override
