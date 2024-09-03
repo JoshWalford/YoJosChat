@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
-import 'package:yojo_chats/screens/contacts_screen.dart';
+import 'package:yojo_chats/screens/profile_screen.dart';
 import 'package:yojo_chats/screens/welcome_screen.dart';
 
 import '../../provider/auth_provider.dart';
@@ -28,6 +28,13 @@ class _CPopupMenuState extends State<CPopupMenu> {
           selectedItem = item;
         });
         switch (item) {
+          case MenuItems.profile:
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfileScreen(),
+              ),
+            );
           case MenuItems.about:
           // TODO: Handle this case.
           case MenuItems.settings:
@@ -45,16 +52,23 @@ class _CPopupMenuState extends State<CPopupMenu> {
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItems>>[
         const PopupMenuItem<MenuItems>(
+          value: MenuItems.profile,
+          child: ListTile(
+            leading: Icon(Iconsax.user),
+            title: Text('Profile'),
+          ),
+        ),
+        const PopupMenuItem<MenuItems>(
           value: MenuItems.about,
           child: ListTile(
-            leading: Icon(Icons.info),
+            leading: Icon(Iconsax.info_circle),
             title: Text('About'),
           ),
         ),
         const PopupMenuItem<MenuItems>(
           value: MenuItems.settings,
           child: ListTile(
-            leading: Icon(Icons.settings),
+            leading: Icon(Iconsax.setting_2),
             title: Text('Setting'),
           ),
         ),

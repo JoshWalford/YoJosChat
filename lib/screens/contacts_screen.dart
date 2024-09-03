@@ -2,12 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-import 'package:yojo_chats/provider/auth_provider.dart';
 import 'package:yojo_chats/utils/placeholder/post_search_delegate.dart';
 import 'package:yojo_chats/widgets/buttons/contacts_button.dart';
 import 'package:yojo_chats/widgets/buttons/cpopup_menu_button.dart';
-import 'package:yojo_chats/widgets/contacts_listview.dart';
+import 'package:yojo_chats/components/contacts_listview.dart';
 
 import '../utils/placeholder/post.dart';
 
@@ -44,8 +42,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-
     return Scaffold(
       appBar: AppBar(
         elevation: 3.0,

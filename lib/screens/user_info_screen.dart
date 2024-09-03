@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
-import 'package:yojo_chats/model/user_model.dart';
 import 'package:yojo_chats/provider/auth_provider.dart';
-import 'package:yojo_chats/screens/chat_screen.dart';
-import 'package:yojo_chats/screens/contacts_screen.dart';
 import 'package:yojo_chats/utils/utils.dart';
 import 'package:yojo_chats/widgets/buttons/custom_button.dart';
+import 'package:yojo_chats/services/store_data.dart';
+
+import '../components/text_field.dart';
 
 class UserInfoScreen extends StatefulWidget {
   const UserInfoScreen({super.key});
@@ -19,19 +19,34 @@ class UserInfoScreen extends StatefulWidget {
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
   File? image;
-  final fnameController = TextEditingController();
-  final lnameController = TextEditingController();
+  final fNameController = TextEditingController();
+  final lNameController = TextEditingController();
+  final bioController = TextEditingController();
+  final phoneController = TextEditingController();
 
   @override
   void dispose() {
     super.dispose();
-    fnameController.dispose();
-    lnameController.dispose();
+    fNameController.dispose();
+    lNameController.dispose();
+    bioController.dispose();
+    phoneController.dispose();
   }
 
   void selectImage() async {
     image = await pickImage(context);
     setState(() {});
+  }
+
+  void handleContinue() {
+    StoreData(
+      context: context,
+      fNameController: fNameController,
+      lNameController: lNameController,
+      bioController: bioController,
+      phoneController: phoneController,
+      image: image,
+    ).storeData();
   }
 
   @override
@@ -76,20 +91,18 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         margin: const EdgeInsets.only(top: 20),
                         child: Column(
                           children: [
-                            textField(
-                              hintText: "Enter your First Name",
-                              icon: Iconsax.user,
-                              inputType: TextInputType.name,
-                              maxLines: 1,
-                              controller: fnameController,
-                            ),
-                            textField(
-                              hintText: "Enter your last Name",
-                              icon: Iconsax.user,
-                              inputType: TextInputType.name,
-                              maxLines: 1,
-                              controller: lnameController,
-                            ),
+                            CTextField(
+                                hintText: "Enter your First Name",
+                                icon: Iconsax.user,
+                                inputType: TextInputType.name,
+                                maxLines: 1,
+                                controller: fNameController),
+                            CTextField(
+                                hintText: "Enter your last Name",
+                                icon: Iconsax.user,
+                                inputType: TextInputType.name,
+                                maxLines: 1,
+                                controller: lNameController),
                           ],
                         ),
                       ),
@@ -99,7 +112,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         width: MediaQuery.of(context).size.width * 0.90,
                         child: CustomButton(
                           text: "Continue",
-                          onPressed: () => storeData(),
+                          onPressed: () => handleContinue(),
                         ),
                       ),
                     ],
@@ -108,86 +121,5 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
       ),
     );
-  }
-
-  Widget textField({
-    required String hintText,
-    required IconData icon,
-    required TextInputType inputType,
-    required int maxLines,
-    required TextEditingController controller,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: TextFormField(
-        cursorColor: Colors.cyan,
-        controller: controller,
-        keyboardType: inputType,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          prefixIcon: Container(
-            margin: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              color: Colors.transparent,
-            ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: Colors.cyan,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: Colors.grey.shade300,
-              width: 2.0,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 2.0),
-          ),
-          hintText: hintText,
-          hintStyle: const TextStyle(
-              color: Colors.black38, fontWeight: FontWeight.bold),
-          alignLabelWithHint: true,
-          border: InputBorder.none,
-        ),
-      ),
-    );
-  }
-
-  // store user data to database
-  void storeData() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    UserModel userModel = UserModel(
-      fName: fnameController.text.trim(),
-      lName: fnameController.text.trim(),
-      profilePic: "",
-      createAt: "",
-      phoneNumber: "",
-      uid: "",
-    );
-    if (image != null) {
-      ap.saveUserDataToFirebase(
-          context: context,
-          userModel: userModel,
-          profilePic: image!,
-          onSuccess: () {
-            ap.savedUserDataToSp().then(
-                  (value) => ap.setSignIn().then(
-                        (value) => Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ContactsScreen(),
-                            ),
-                            (route) => false),
-                      ),
-                );
-          });
-    } else {
-      showSnackBar(context, "Please upload a profile picture");
-    }
   }
 }

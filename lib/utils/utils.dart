@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 void showSnackBar(BuildContext context, String content) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -14,7 +15,13 @@ void showSnackBar(BuildContext context, String content) {
 
 Future<File?> pickImage(BuildContext context) async {
   File? image;
-  PermissionStatus status = await Permission.photos.request();
+  PermissionStatus status;
+
+  if (Platform.isAndroid && await DeviceInfoPlugin().androidInfo.then((info) => info.version.sdkInt >= 33)) {
+    status = await Permission.photos.request();
+  } else {
+    status = await Permission.storage.request();
+  }
 
   if (status.isGranted) {
     try {

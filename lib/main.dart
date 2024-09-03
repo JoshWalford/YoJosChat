@@ -1,9 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:yojo_chats/provider/auth_provider.dart';
-import 'package:yojo_chats/screens/user_info_screen.dart';
-import 'package:yojo_chats/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:yojo_chats/screens/chat_screen.dart';
+import 'package:yojo_chats/screens/contacts_screen.dart';
+import 'package:yojo_chats/screens/login_screen.dart';
+import 'package:yojo_chats/screens/otp_screen.dart';
+import 'package:yojo_chats/screens/welcome_screen.dart';
 
 
 Future<void> main() async {
@@ -21,11 +24,18 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: //UserInfoScreen(),
-        WelcomeScreen(),
         title: 'Yojo\'s Chat',
+        home: const WelcomeScreen(),
+
+         routes: {
+          'loginScreen': (context) => const LoginScreen(),
+          'oTpScreen': (context) => const OTPScreen(verificationId: ''),
+          'contactScreen': (context) => const ContactsScreen(),
+          'chatScreen': (context) => const ChatScreen(receiverUserPhoneNumber: '', receiverUserID: '',),
+         },
+
       ),
     );
   }

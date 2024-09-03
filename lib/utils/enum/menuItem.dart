@@ -1,1 +1,1 @@
-enum MenuItems {about, settings, logout }
+enum MenuItems {profile, about, settings, logout }

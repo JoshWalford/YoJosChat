@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yojo_chats/utils/placeholder/post.dart';
-import 'package:yojo_chats/widgets/post_list.dart';
+import 'package:yojo_chats/components/post_list.dart';
 
 class PostSearchDelegate extends SearchDelegate{
   PostSearchDelegate({required this.posts});

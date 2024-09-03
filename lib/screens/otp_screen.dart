@@ -160,7 +160,7 @@ class _OTPScreenState extends State<OTPScreen> {
         ap.checkExistingUser().then(
           (value) async {
             if (value == true) {
-              ap.getDataFromFirestore().then(
+              ap.getDataFromFireStore().then(
                     (value) => ap.savedUserDataToSp().then(
                           (value) => ap.setSignIn().then(
                                 (value) => Navigator.pushAndRemoveUntil(

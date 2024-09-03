@@ -26,7 +26,7 @@ class AuthProvider extends ChangeNotifier {
   UserModel get userModel => _userModel!;
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firebaseFireStore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   AuthProvider() {
@@ -84,10 +84,8 @@ class AuthProvider extends ChangeNotifier {
           verificationId: verificationId, smsCode: userOtp);
       User? user = (await _firebaseAuth.signInWithCredential(creds)).user!;
 
-      if (user != null) {
-        _uid = user.uid;
-        onSuccess();
-      }
+      _uid = user.uid;
+      onSuccess();
       _isLoading = false;
       notifyListeners();
     } on FirebaseAuthException catch (e) {
@@ -99,12 +97,10 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> checkExistingUser() async {
     DocumentSnapshot snapshot =
-        await _firebaseFirestore.collection("users").doc(_uid).get();
+        await _firebaseFireStore.collection("users").doc(_uid).get();
     if (snapshot.exists) {
-      print("User Exits");
       return true;
     } else {
-      print("New User");
       return false;
     }
   }
@@ -112,21 +108,28 @@ class AuthProvider extends ChangeNotifier {
   void saveUserDataToFirebase({
     required BuildContext context,
     required UserModel userModel,
-    required File profilePic,
+    required File? profilePic,
     required Function onSuccess,
   }) async {
     _isLoading = true;
     notifyListeners();
     try {
-      await storeFileToStorage("profilePic/$_uid", profilePic).then((value) {
-        userModel.profilePic = value;
-        userModel.createAt = DateTime.now().millisecondsSinceEpoch.toString();
-        userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
-        userModel.uid = _firebaseAuth.currentUser!.phoneNumber!;
-      });
-      _userModel = userModel;
+      if (profilePic != null) {
+        await storeFileToStorage("profilePic/$_uid", profilePic).then((value) {
+          userModel.profilePic = value;
+          userModel.createAt = DateTime.now().millisecondsSinceEpoch.toString();
+          userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
+          userModel.uid = _firebaseAuth.currentUser!.phoneNumber!;
+        });
+      } else {
+        userModel.profilePic =
+            userModel.fName.isNotEmpty
+                ? userModel.fName[0].toUpperCase()
+                : '';
+        //_userModel = userModel;
+      }
 
-      await _firebaseFirestore
+      await _firebaseFireStore
           .collection("users")
           .doc(_uid)
           .set(userModel.toMap())
@@ -149,21 +152,22 @@ class AuthProvider extends ChangeNotifier {
     return downloadUrl;
   }
 
-  Future getDataFromFirestore() async {
-    await _firebaseFirestore
+  Future getDataFromFireStore() async {
+    await _firebaseFireStore
         .collection("users")
         .doc(_firebaseAuth.currentUser!.uid)
         .get()
         .then((DocumentSnapshot snapshot) {
-          _userModel = UserModel(
-              fName: snapshot ['fName'],
-              lName: snapshot ['lName'],
-              profilePic: snapshot ['profilePic'],
-              createAt: snapshot ['createAt'],
-              phoneNumber: snapshot ['phoneNumber'],
-              uid: snapshot ['uid'],
-          );
-          _uid = userModel.uid;
+      _userModel = UserModel(
+        fName: snapshot['fName'],
+        lName: snapshot['lName'],
+        profilePic: snapshot['profilePic'],
+        createAt: snapshot['createAt'],
+        phoneNumber: snapshot['phoneNumber'],
+        bio: snapshot[''],
+        uid: snapshot['uid'],
+      );
+      _uid = userModel.uid;
     });
   }
 
@@ -180,7 +184,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future userSignOut() async{
+  Future userSignOut() async {
     SharedPreferences s = await SharedPreferences.getInstance();
     await _firebaseAuth.signOut();
     _isSignedIn = false;
