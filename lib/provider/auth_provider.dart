@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yojo_chats/screens/otp_screen.dart';
+import 'package:yojo_chats/screens/auth/otp_screen.dart';
 import 'package:yojo_chats/utils/utils.dart';
 
 import '../model/user_model.dart';
@@ -20,13 +20,13 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? _uid;
 
-  String get uid => _uid!;
+  String? get uid => _uid;
   UserModel? _userModel;
 
-  UserModel get userModel => _userModel!;
+  UserModel? get userModel => _userModel;
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _firebaseFireStore = FirebaseFirestore.instance;
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   AuthProvider() {
@@ -35,7 +35,7 @@ class AuthProvider extends ChangeNotifier {
 
   void checkSignIn() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
-    _isSignedIn = s.getBool("is_signedin") ?? false;
+    _isSignedIn = s.getBool("is_signedIn") ?? false;
     notifyListeners();
   }
 
@@ -82,14 +82,17 @@ class AuthProvider extends ChangeNotifier {
     try {
       PhoneAuthCredential creds = PhoneAuthProvider.credential(
           verificationId: verificationId, smsCode: userOtp);
-      User? user = (await _firebaseAuth.signInWithCredential(creds)).user!;
+      User? user = (await _firebaseAuth.signInWithCredential(creds)).user;
 
-      _uid = user.uid;
-      onSuccess();
+      if (user != null) {
+        _uid = user.uid;
+        onSuccess();
+      }
+
       _isLoading = false;
       notifyListeners();
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString());
+      showSnackBar(context, e.toString());
       _isLoading = false;
       notifyListeners();
     }
@@ -97,49 +100,36 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> checkExistingUser() async {
     DocumentSnapshot snapshot =
-        await _firebaseFireStore.collection("users").doc(_uid).get();
-    if (snapshot.exists) {
-      return true;
-    } else {
-      return false;
-    }
+        await _fireStore.collection("users").doc(_uid).get();
+    return (snapshot.exists);
   }
 
   void saveUserDataToFirebase({
     required BuildContext context,
     required UserModel userModel,
-    required File? profilePic,
+    required File profilePic,
     required Function onSuccess,
   }) async {
     _isLoading = true;
     notifyListeners();
     try {
-      if (profilePic != null) {
-        await storeFileToStorage("profilePic/$_uid", profilePic).then((value) {
-          userModel.profilePic = value;
-          userModel.createAt = DateTime.now().millisecondsSinceEpoch.toString();
-          userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
-          userModel.uid = _firebaseAuth.currentUser!.phoneNumber!;
-        });
-      } else {
-        userModel.profilePic =
-            userModel.fName.isNotEmpty
-                ? userModel.fName[0].toUpperCase()
-                : '';
-        //_userModel = userModel;
-      }
-
-      await _firebaseFireStore
-          .collection("users")
-          .doc(_uid)
-          .set(userModel.toMap())
-          .then((value) {
-        onSuccess();
-        _isLoading = false;
-        notifyListeners();
+      await storeFileToStorage("profilePic/$_uid", profilePic).then((value) {
+        userModel.profilePic = value;
+        userModel.createAt = DateTime.now().millisecondsSinceEpoch.toString();
+        userModel.uid = _uid!;
+        userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
       });
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString());
+
+      await _fireStore.collection("users").doc(_uid).set(userModel.toMap());
+
+      _userModel = userModel;
+      onSuccess();
+      _isLoading = false;
+      notifyListeners();
+    }
+    //on FirebaseAuthException
+    catch (e) {
+      showSnackBar(context, e.toString());
       _isLoading = false;
       notifyListeners();
     }
@@ -153,7 +143,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future getDataFromFireStore() async {
-    await _firebaseFireStore
+    await _fireStore
         .collection("users")
         .doc(_firebaseAuth.currentUser!.uid)
         .get()
@@ -164,16 +154,16 @@ class AuthProvider extends ChangeNotifier {
         profilePic: snapshot['profilePic'],
         createAt: snapshot['createAt'],
         phoneNumber: snapshot['phoneNumber'],
-        bio: snapshot[''],
         uid: snapshot['uid'],
+        bio: '',
       );
-      _uid = userModel.uid;
+      _uid = userModel?.uid;
     });
   }
 
   Future savedUserDataToSp() async {
     SharedPreferences s = await SharedPreferences.getInstance();
-    await s.setString("user_model", jsonEncode(userModel.toMap()));
+    await s.setString("user_model", jsonEncode(userModel?.toMap()));
   }
 
   Future getDataFromSp() async {
@@ -190,5 +180,31 @@ class AuthProvider extends ChangeNotifier {
     _isSignedIn = false;
     notifyListeners();
     s.clear();
+  }
+
+  void saveUserDataWithoutImageToFirebase({
+    required BuildContext context,
+    required UserModel userModel,
+    required Function onSuccess,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      userModel.profilePic = '';
+      userModel.createAt = DateTime.now().millisecondsSinceEpoch.toString();
+      userModel.uid = _uid!;
+      userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
+
+      await _fireStore.collection("users").doc(_uid).set(userModel.toMap());
+
+      _userModel = userModel;
+      onSuccess();
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      showSnackBar(context, e.toString());
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

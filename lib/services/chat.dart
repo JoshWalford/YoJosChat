@@ -5,32 +5,37 @@ import 'package:yojo_chats/model/message.dart';
 
 class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   // SEND MESSAGE
   Future<void> sendMessage(String receiverId, String message) async {
-    // get current user info
+    // Get current user info
     final String currentUserId = _firebaseAuth.currentUser!.uid;
-    final String currentUserPhoneNumber =
-        _firebaseAuth.currentUser!.phoneNumber.toString();
     final Timestamp timestamp = Timestamp.now();
 
-    // create a new message
-    Message newMessage = Message(
-      senderId: currentUserId,
-      senderPhoneNumber: currentUserPhoneNumber,
-      receiverId: receiverId,
-      timeStamp: timestamp,
-      message: message,
-    );
-
-    //construct chat room id from current user id and receiver id (sorted to ensure uniqueness)
+    // Construct chat room ID from current user ID and receiver ID (sorted to ensure uniqueness)
     List<String> ids = [currentUserId, receiverId];
     ids.sort();
     String chatRoomId = ids.join("_");
 
-    // add new message to database
-    await _firestore
+    // Create or update the chat room document
+    await _fireStore.collection('chat_rooms').doc(chatRoomId).set({
+      'lastMessage': message,
+      'lastTimestamp': timestamp,
+      // You can add more fields here if needed
+    }, SetOptions(merge: true)); // Use merge to avoid overwriting existing data
+
+    // Create a new message
+    Message newMessage = Message(
+      senderId: currentUserId,
+      senderPhoneNumber: _firebaseAuth.currentUser!.phoneNumber.toString(),
+      receiverId: receiverId,
+      timestamp: timestamp,
+      message: message,
+    );
+
+    // Add new message to database
+    await _fireStore
         .collection('chat_rooms')
         .doc(chatRoomId)
         .collection('messages')
@@ -39,15 +44,15 @@ class ChatService extends ChangeNotifier {
 
   // GET MESSAGE
   Stream<QuerySnapshot> getMessage(String userId, String otherUserId) {
-    // construct chat room id from user ids
+    // Construct chat room ID from user IDs
     List<String> ids = [userId, otherUserId];
     ids.sort();
     String chatRoomId = ids.join("_");
 
-    return _firestore
-        .collection('chat_room')
+    return _fireStore
+        .collection('chat_rooms')
         .doc(chatRoomId)
-        .collection('message')
+        .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots();
   }

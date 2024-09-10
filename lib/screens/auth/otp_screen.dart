@@ -3,12 +3,12 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
-import 'package:yojo_chats/screens/contacts_screen.dart';
-import 'package:yojo_chats/screens/user_info_screen.dart';
+import 'package:yojo_chats/screens/home_screen.dart';
+import 'package:yojo_chats/screens/auth/user_info_screen.dart';
 import 'package:yojo_chats/utils/utils.dart';
 import 'package:yojo_chats/widgets/buttons/custom_button.dart';
 
-import '../provider/auth_provider.dart';
+import '../../provider/auth_provider.dart';
 
 class OTPScreen extends StatefulWidget {
   final String verificationId;
@@ -167,7 +167,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const ContactsScreen(),
+                                          const HomeScreen(),
                                     ),
                                     (route) => false),
                               ),

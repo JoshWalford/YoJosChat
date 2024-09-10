@@ -3,20 +3,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:yojo_chats/utils/placeholder/post_search_delegate.dart';
-import 'package:yojo_chats/widgets/buttons/contacts_button.dart';
 import 'package:yojo_chats/widgets/buttons/cpopup_menu_button.dart';
 import 'package:yojo_chats/components/contacts_listview.dart';
 
 import '../utils/placeholder/post.dart';
 
-class ContactsScreen extends StatefulWidget {
-  const ContactsScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<ContactsScreen> createState() => _ContactsScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _ContactsScreenState extends State<ContactsScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   List<Post> posts = <Post>[];
 
   @override
@@ -72,16 +71,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
           SizedBox(height: 0),
           Expanded(
             child: ContactsListView(),
-          ),
-          SizedBox(height: 0),
-          Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ContactsButton(routeName: '/chatScreen'),
-              ],
-            ),
           ),
         ],
       ),

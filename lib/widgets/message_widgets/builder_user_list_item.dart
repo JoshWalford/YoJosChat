@@ -1,10 +1,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../provider/auth_provider.dart';
-import '../screens/chat_screen.dart';
+import '../../provider/auth_provider.dart';
+import '../../screens/chat_screen.dart';
 
 class BuilderUserListItem extends StatelessWidget {
   const BuilderUserListItem({
@@ -22,7 +21,7 @@ class BuilderUserListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
 
-    if (ap.userModel.phoneNumber == data['phoneNumber']) {
+    if (ap.userModel?.phoneNumber == data['phoneNumber']) {
       return const SizedBox.shrink();
     }
     return Column(
@@ -55,7 +54,7 @@ class BuilderUserListItem extends StatelessWidget {
           ),
         ),
         Divider(
-          thickness: 1,
+          thickness: 2,
           height: 1,
           indent: 20,
           endIndent: 20,

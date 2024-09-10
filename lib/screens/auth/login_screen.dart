@@ -128,8 +128,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void sendPhoneNumber() {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
     String phoneNumber = phoneController.text.trim();
+
+    if (phoneNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your phone number'))
+      );
+      return;
+    }
+    final ap = Provider.of<AuthProvider>(context, listen: false);
     ap.signInWithPhone(context, "+${selectedCountry.phoneCode}$phoneNumber");
   }
 }

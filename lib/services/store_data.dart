@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../model/user_model.dart';
 import '../provider/auth_provider.dart';
-import '../screens/contacts_screen.dart';
-import '../utils/utils.dart';
+import '../screens/home_screen.dart';
 
 class StoreData {
   final BuildContext context;
@@ -25,13 +24,16 @@ class StoreData {
 
   Future<void> storeData() async {
     final ap = Provider.of<AuthProvider>(context, listen: false);
+
+    String profilePicUrl = image != null ? "" : "assets/images/placeholder.jpg";
+
     UserModel userModel = UserModel(
       fName: fNameController.text.trim(),
       lName: lNameController.text.trim(),
       bio: bioController.text.trim(),
-      profilePic: "",
-      createAt: "",
-      phoneNumber: "",
+      profilePic: profilePicUrl,
+      createAt: DateTime.now().toString(),
+      phoneNumber: phoneController.text.trim(),
       uid: "",
     );
 
@@ -46,7 +48,7 @@ class StoreData {
                   (value) => Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ContactsScreen(),
+                  builder: (context) => const HomeScreen(),
                 ),
                     (route) => false,
               ),
@@ -55,7 +57,22 @@ class StoreData {
         },
       );
     } else {
-      showSnackBar(context, "Please upload a profile picture");
+      ap.saveUserDataWithoutImageToFirebase(
+        context: context,
+        userModel: userModel,
+        onSuccess: () {
+          ap.savedUserDataToSp().then(
+              (value) => ap.setSignIn().then(
+                  (value) => Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomeScreen(),
+                      ),
+                      (route) => false,
+                  )
+              )
+          );
+        }
+      );
     }
   }
 }

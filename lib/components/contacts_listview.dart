@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:yojo_chats/screens/chat_screen.dart';
 
 import '../provider/auth_provider.dart';
-import '../widgets/builderUserListItem.dart';
+import '../widgets/message_widgets/builder_user_list_item.dart';
 
 class ContactsListView extends StatefulWidget {
   const ContactsListView({super.key});
@@ -19,6 +18,13 @@ class _ContactsListViewState extends State<ContactsListView> {
   Widget build(BuildContext context) {
     final ap = Provider.of<AuthProvider>(context, listen: false);
 
+    // Check if uid is not null
+    if (ap.uid == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return Scaffold(
       body: _buildUserList(ap),
     );
@@ -26,10 +32,13 @@ class _ContactsListViewState extends State<ContactsListView> {
 
   Widget _buildUserList(AuthProvider ap) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .where('uid', isNotEqualTo: ap.uid) // Exclude current user by UID
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Text('error');
+          return const Text('Error occurred');
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,5 +53,4 @@ class _ContactsListViewState extends State<ContactsListView> {
       },
     );
   }
-
 }

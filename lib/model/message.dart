@@ -5,22 +5,23 @@ class Message {
   final String senderPhoneNumber;
   final String receiverId;
   final String message;
-  final Timestamp timeStamp;
+  final Timestamp timestamp;
 
   Message({
     required this.senderId,
     required this.senderPhoneNumber,
     required this.receiverId,
-    required this.timeStamp,
+    required this.timestamp,
     required this.message,
   });
 
+  // convert to a map
   Map<String, dynamic> toMap() {
     return {
       'senderId': senderId,
       'senderPhoneNumber': senderPhoneNumber,
       'receiverId': receiverId,
-      'timeStamp': timeStamp,
+      'timestamp': timestamp,
       'message': message,
     };
   }

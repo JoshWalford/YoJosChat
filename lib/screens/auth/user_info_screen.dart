@@ -8,7 +8,7 @@ import 'package:yojo_chats/utils/utils.dart';
 import 'package:yojo_chats/widgets/buttons/custom_button.dart';
 import 'package:yojo_chats/services/store_data.dart';
 
-import '../components/text_field.dart';
+import '../../components/text_field.dart';
 
 class UserInfoScreen extends StatefulWidget {
   const UserInfoScreen({super.key});
@@ -18,7 +18,7 @@ class UserInfoScreen extends StatefulWidget {
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
-  File? image;
+  File? pickedImage;
   final fNameController = TextEditingController();
   final lNameController = TextEditingController();
   final bioController = TextEditingController();
@@ -34,9 +34,11 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   }
 
   void selectImage() async {
-    image = await pickImage(context);
-    setState(() {});
-  }
+    pickedImage = await pickImage(context);
+    setState(() {
+      pickedImage = pickedImage;
+    });
+    }
 
   void handleContinue() {
     StoreData(
@@ -45,7 +47,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       lNameController: lNameController,
       bioController: bioController,
       phoneController: phoneController,
-      image: image,
+      image: pickedImage,
     ).storeData();
   }
 
@@ -69,7 +71,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     children: [
                       InkWell(
                         onTap: () => selectImage(),
-                        child: image == null
+                        child: pickedImage == null
                             ? const CircleAvatar(
                                 backgroundColor: Colors.cyan,
                                 radius: 50,
@@ -80,7 +82,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                                 ),
                               )
                             : CircleAvatar(
-                                backgroundImage: FileImage(image!),
+                                backgroundImage: FileImage(pickedImage!),
                                 radius: 50,
                               ),
                       ),
