@@ -31,7 +31,6 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Yojo\'s Chat',
         home: const AuthGate(),
-        //WelcomeScreen(),
 
         routes: {
           'loginScreen': (context) => const LoginScreen(),

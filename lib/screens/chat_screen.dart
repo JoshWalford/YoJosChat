@@ -22,12 +22,11 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    _loadReceiverData(); // Load the receiver's data when the screen initializes
+    _loadReceiverData();
   }
 
   Future<void> _loadReceiverData() async {
     try {
-      // Fetch the receiver's data from Firestore
       DocumentSnapshot receiverSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.receiverUserID)
@@ -35,7 +34,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
       if (receiverSnapshot.exists && receiverSnapshot.data() != null) {
         setState(() {
-          // Store the receiver's data
           receiverData = receiverSnapshot.data() as Map<String, dynamic>;
         });
       } else {
@@ -89,6 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         elevation: 5.0,
         backgroundColor: Colors.cyan.shade200,
+        shadowColor: Colors.black,
       ),
       body: receiverData == null
           ? const Center(child: CircularProgressIndicator())

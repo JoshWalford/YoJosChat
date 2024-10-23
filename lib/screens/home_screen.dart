@@ -43,13 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 3.0,
+        elevation: 5.0,
+        shadowColor: Colors.black,
         title: Text(
           'YoJo\' Chats',
           style: Theme.of(context)
               .textTheme
               .titleLarge
-              ?.copyWith(fontWeight: FontWeight.normal),
+              ?.copyWith(fontWeight: FontWeight.bold),
           overflow: TextOverflow.ellipsis,
         ),
         backgroundColor: Colors.cyan,
@@ -68,7 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: const Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          SizedBox(height: 0),
           Expanded(
             child: ContactsListView(),
           ),

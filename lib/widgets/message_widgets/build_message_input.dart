@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:yojo_chats/services/chat.dart';
+import 'package:yojo_chats/utils/helper/file_picker.dart';
+import 'package:yojo_chats/utils/helper/image_sender.dart';
+import 'package:yojo_chats/utils/utils.dart';
 import 'package:yojo_chats/widgets/message_widgets/build_message_list.dart';
 
 class MessageInput extends StatefulWidget {
@@ -21,6 +26,8 @@ class _MessageInputState extends State<MessageInput> {
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = ChatService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final ImageSender imageSender = ImageSender();
+  final FilePickerHelper filePickerHelper =  FilePickerHelper();
   bool _isTyping = false;
 
   @override
@@ -49,12 +56,24 @@ class _MessageInputState extends State<MessageInput> {
     }
   }
 
+  void sendImageMessage(File image) async {
+    try {
+      await _chatService.sendChatImage(widget.receiverUserID, image);
+      showSnackBar(context, 'Image sent successfully');
+    } catch (e) {
+      showSnackBar(context, 'Unable to send image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
-          child: BuildMessageList(chatService: _chatService, widget: widget, firebaseAuth: _firebaseAuth),
+          child: BuildMessageList(
+              chatService: _chatService,
+              widget: widget,
+              firebaseAuth: _firebaseAuth),
         ),
         _buildMessageInput(),
         const SizedBox(height: 25),
@@ -65,41 +84,42 @@ class _MessageInputState extends State<MessageInput> {
   Widget _buildMessageInput() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Expanded(
-        child: TextField(
-          controller: _messageController,
-          decoration: InputDecoration(
-            prefixIcon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                      Iconsax.add,
-                      color: Colors.cyan.shade200),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                      Iconsax.gallery_add,
-                      color: Colors.cyan.shade200),
-                ),
-              ],
-            ),
-            suffixIcon: IconButton(
-              onPressed: sendMessage,
-              icon: Icon(
-                Icons.send,
-                color: Colors.cyan.shade200,
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-            hintText: 'Type a message',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () async {
+              File? image = await imageSender.pickImageFromGallery();
+              if (image != null) {
+                sendImageMessage(image);  // Send the picked image
+              } else {
+                showSnackBar(context, 'No image selected');
+              }
+            },
+            icon: Icon(
+              Iconsax.gallery_add,
+              color: Colors.cyan.shade200,
             ),
           ),
-        ),
+          Expanded(
+            child: TextField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                hintText: 'Type a message',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: sendMessage,
+            icon: Icon(
+              Icons.send,
+              color: Colors.cyan.shade200,
+            ),
+          ),
+        ],
       ),
     );
   }
